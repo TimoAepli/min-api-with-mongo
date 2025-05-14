@@ -12,4 +12,4 @@ WORKDIR /app
 COPY --from=build-env /build/out .
 ENV ASPNETCORE_URLS=http://*:5001
 EXPOSE 5001
-ENTRYPOINT ["dotnet", "WebApi.csproj"]
+ENTRYPOINT ["dotnet", "WebApi.dll"]
