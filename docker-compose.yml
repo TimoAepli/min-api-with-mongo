@@ -1,7 +1,6 @@
 services:
   webapi:
-    build:
-      context: ./WebApi
-      dockerfile: Dockerfile
+    build: WebApi
+    restart: always
     ports:
       - "5001:5001"
