@@ -1,31 +1,32 @@
 using MongoDB.Driver;
-
+ 
+ 
 var builder = WebApplication.CreateBuilder(args);
+ 
+var movieDatabaseConfigSection = builder.Configuration.GetSection("DatabaseSettings");
+builder.Services.Configure<DatabaseSettings>(movieDatabaseConfigSection);
+ 
 var app = builder.Build();
-
-app.MapGet("/", () => "Hello World!");
-
-app.MapGet("/check", () =>
+ 
+app.MapGet("/", () => "Minimal API nach Arbeitsauftrag 2");
+ 
+// docker run --name mongodb -d -p 27017:27017 -v data:/data/db -e MONGO_INITDB_ROOT_USERNAME=gbs -e MONGO_INITDB_ROOT_PASSWORD=geheim mongo
+app.MapGet("/check", (Microsoft.Extensions.Options.IOptions<DatabaseSettings> options) =>
 {
+ 
     try
     {
-        // Verbindung zur MongoDB aufbauen (Connection String direkt im Code)
-        var connectionString = "mongodb://localhost:27017"; // Achtung: später konfigurierbar machen
-        var client = new MongoClient(connectionString);
-
-        // Alle Datenbanken abrufen
-        var dbList = client.ListDatabaseNames().ToList();
-
-        // Ergebnis-Text vorbereiten
-        var result = "Zugriff auf MongoDB ok.\nGefundene Datenbanken:\n";
-        result += string.Join("\n", dbList);
-        return Results.Ok(result);
+        var mongoDbConnectionString = options.Value.ConnectionString;
+        var mongoClient = new MongoClient(mongoDbConnectionString);
+        var databaseNames = mongoClient.ListDatabaseNames().ToList();
+ 
+        return "Zugriff auf MongoDB ok. Vorhandene DBs: " + string.Join(",", databaseNames);
     }
-    catch (Exception ex)
+    catch (System.Exception e)
     {
-        // Fehlerbehandlung: Fehlermeldung zurückgeben
-        return Results.Problem("Fehler beim Zugriff auf MongoDB: " + ex.Message);
+        return "Zugriff auf MongoDB funktioniert nicht: " + e.Message;
     }
+ 
 });
 
 app.Run();
