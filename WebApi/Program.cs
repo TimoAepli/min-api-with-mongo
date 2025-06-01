@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var movieDatabaseConfigSection = builder.Configuration.GetSection("DatabaseSettings");
 builder.Services.Configure<DatabaseSettings>(movieDatabaseConfigSection);
+builder.Services.AddSingleton<IMovieService, MongoMovieService>();
 
 var app = builder.Build();
 

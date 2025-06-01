@@ -8,6 +8,19 @@ public class MongoMovieService : IMovieService
     { }
     public string Check()
     {
-        return "Zugriff auf MongoDB ...";
+        return "test";
+        /*try
+        {
+            var mongoDbConnectionString = options.Value.ConnectionString;
+            var mongoClient = new MongoClient(mongoDbConnectionString);
+            var databaseNames = mongoClient.ListDatabaseNames().ToList();
+
+            return "Zugriff auf MongoDB ok. Vorhandene DBs: " + string.Join(",", databaseNames);
+        }
+        catch (System.Exception e)
+        {
+            return "Zugriff auf MongoDB funktioniert nicht: " + e.Message;
+        }*/
+
     }
 }
