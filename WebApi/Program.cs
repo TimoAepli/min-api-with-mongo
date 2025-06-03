@@ -1,6 +1,3 @@
-using MongoDB.Driver;
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 var movieDatabaseConfigSection = builder.Configuration.GetSection("DatabaseSettings");
@@ -11,23 +8,9 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Minimal API nach Arbeitsauftrag 2");
 
-// docker run --name mongodb -d -p 27017:27017 -v data:/data/db -e MONGO_INITDB_ROOT_USERNAME=gbs -e MONGO_INITDB_ROOT_PASSWORD=geheim mongo
-app.MapGet("/check", (Microsoft.Extensions.Options.IOptions<DatabaseSettings> options) =>
+app.MapGet("/check", (IMovieService movieService) =>
 {
-
-    try
-    {
-        var mongoDbConnectionString = options.Value.ConnectionString;
-        var mongoClient = new MongoClient(mongoDbConnectionString);
-        var databaseNames = mongoClient.ListDatabaseNames().ToList();
-
-        return "Zugriff auf MongoDB ok. Vorhandene DBs: " + string.Join(",", databaseNames);
-    }
-    catch (System.Exception e)
-    {
-        return "Zugriff auf MongoDB funktioniert nicht: " + e.Message;
-    }
-
+    return movieService.Check();
 });
 
 // Insert Movie
@@ -62,8 +45,8 @@ app.MapGet("api/movies", () =>
 // Gibt das gewünschte Movie-Objekt mit Statuscode 200 OK zurück.
 // Bei ungültiger id wird Statuscode 404 not found zurückgegeben.
 app.MapGet("api/movies/{id}", (string id) =>
-{    
-    if(id == "1")
+{
+    if (id == "1")
     {
         var movie = new Movie()
         {
